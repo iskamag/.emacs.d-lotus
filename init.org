@@ -760,7 +760,6 @@ Shamelessly copied from [[https://github.com/jamescherti/minimal-emacs.d][minima
          ("M-s r" . consult-ripgrep)
          ("M-s l" . consult-line)
 	 ("C-s" . consult-line)
-	 ("C-f" . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
@@ -1162,11 +1161,11 @@ Cycles through three states:
 ;; background colors are changed to be consistent with src-blocks in org-mode
 (setq
  org-src-fontify-natively t
- org-src-block-faces '(("elisp" (:background "lavender"))
-                       ("emacs-lisp" (:background "lavender"))
-                       ("clojure" (:background "lavender"))
-                       ("clojurescript" (:background "lavender"))
-                       ("clojurec" (:background "lavender"))))
+ org-src-block-faces '(("elisp" (:background "black"))
+                       ("emacs-lisp" (:background "black"))
+                       ("clojure" (:background "black"))
+                       ("clojurescript" (:background "black"))
+                       ("clojurec" (:background "black"))))
 
 (setq
  ;; open src blocks in the same window as parent .org file
@@ -1314,7 +1313,7 @@ Prevents flycheck from confusing buffers and breaking down. See this [[https://g
  'polymode-init-inner-hook
  (lambda ()
    (oset pm/chunkmode adjust-face
-	 '(:background "lavender"
+	 '(:background "black"
            :extend t))))
 #+end_src
 

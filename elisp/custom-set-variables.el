@@ -9,7 +9,11 @@
 		 "--with-filename" "--no-heading" "--line-number" "--color" "never" "%s"))
  '(custom-enabled-themes nil)
  '(custom-safe-themes
-	 '("9ab9441566f7c3b059a205a7c5fad32a58422c2695815436d8cc087860b8c2e5"
+	 '("7e99647c5d207d8f6871821c6691038e61c77b4a42d3104d466c5b0f946da5b8"
+		 "edac7482aa3b826f553e556b6063b3b68c844cf040fa8a769755cb4f3eef9258"
+		 "5e2ee110fadd9d2a7988d1bc9adb39d0f14a672320bdace6e0e49113860f6fce"
+		 "226ca27c43cbfcfda085fc2e2449d72ff69e46bf7c829ff63dfab5ce4c7eba19"
+		 "9ab9441566f7c3b059a205a7c5fad32a58422c2695815436d8cc087860b8c2e5"
 		 "7613ef56a3aebbec29618a689e47876a72023bbd1b8393efc51c38f5ed3f33d1"
 		 "703a3469ae4d2a83fd5648cac0058d57ca215d0fea7541fb852205e4fae94983"
 		 "c7a926ad0e1ca4272c90fce2e1ffa7760494083356f6bb6d72481b879afce1f2"
@@ -24,13 +28,11 @@
 															cider clojure-mode command-log-mode consult corfu
 															dired-ranger embark embark-consult flycheck
 															flycheck-clj-kondo iedit keyfreq magit marginalia
-															ob-async ob-clojurescript openwith orderless
-															pcre2el poly-org posframe puni rainbow-delimiters
-															timeout transient treemacs treemacs-all-the-icons
-															undo-fu-session vertico wgrep yasnippet))
- '(safe-local-variable-directories
-	 '("/mnt/sda2/projects/dev/kombinacija/code"
-		 "/mnt/sda2/projects/dev/simple-clojure-project/"))
+															multi-vterm ob-async ob-clojurescript openwith
+															orderless pcre2el poly-org posframe puni
+															rainbow-delimiters transient treemacs timeout
+															treemacs-all-the-icons undo-fu-session undo-tree
+															uwu-theme vertico wgrep yasnippet))
  '(safe-local-variable-values
 	 '((cider-clojure-cli-parameters . "-M:cider/nrepl:dev")
 		 (cider-clojure-cli-parameters . "-M:dev")
@@ -72,13 +74,10 @@
  '(link ((t (:foreground "dark cyan" :underline t))))
  '(mode-line ((t (:background "lavender" :foreground "black" :box (:line-width (1 . -1) :style released-button)))))
  '(mode-line-inactive ((t (:inherit mode-line :background "lavender" :foreground "black" :box (1 . -1) :weight light))))
- '(org-block ((t (:extend t :background "lavender" :foreground "black"))))
- '(org-block-begin-line ((t (:extend t :foreground "dim gray" :slant oblique))))
- '(org-block-end-line ((t (:inherit org-block-begin-line :extend t))))
  '(org-level-1 ((t (:extend nil :foreground "black" :height 1.7))))
  '(org-level-2 ((t (:extend nil :foreground "violet red" :height 1.5))))
  '(org-level-3 ((t (:extend nil :foreground "dark violet" :height 1.3))))
- '(org-level-4 ((t (:extend nil :foreground "blue" :height 1.2))))
+ '(org-level-4 ((t (:extend nil :foreground "cyan4" :height 1.2))))
  '(org-level-5 ((t (:extend nil :foreground "medium aquamarine" :height 1.1))))
  '(org-level-6 ((t (:extend nil :foreground "dark khaki" :height 1.0))))
  '(org-level-7 ((t (:extend nil :foreground "dark salmon" :height 0.9))))
@@ -93,15 +92,8 @@
  '(rainbow-delimiters-depth-6-face ((t (:inherit rainbow-delimiters-base-face :foreground "magenta"))))
  '(rainbow-delimiters-depth-7-face ((t (:inherit rainbow-delimiters-base-face :foreground "brown"))))
  '(rainbow-delimiters-depth-8-face ((t (:inherit rainbow-delimiters-base-face :foreground "navajo white"))))
- '(show-paren-match ((t (:background "gray"))))
  '(tab-bar ((t (:inherit variable-pitch :background "lavender" :foreground "black"))))
  '(tab-bar-tab ((t (:inherit tab-bar :background "MediumPurple1" :foreground "black" :box (:line-width (1 . 1) :style released-button)))))
  '(tab-bar-tab-group-current ((t (:inherit bold :background "MediumPurple1" :foreground "white" :box (:line-width (2 . -2) :color "#ffffff")))))
  '(tab-bar-tab-group-inactive ((t (:background "lavender" :foreground "#193668" :box (:line-width (2 . -2) :color "lavender")))))
- '(tab-bar-tab-inactive ((t (:inherit tab-bar-tab :background "lavender"))))
- '(tab-line ((t (:inherit variable-pitch :background "lavender" :foreground "black" :height 0.9))))
- '(tab-line-highlight ((t (:background "MediumPurple1" :foreground "white" :box (:line-width (1 . 1) :style released-button)))))
- '(tab-line-tab ((t (:inherit tab-line :box (:line-width (1 . 1) :style released-button)))))
- '(tab-line-tab-current ((t (:inherit tab-line-tab :background "MediumPurple1" :foreground "white"))))
- '(tab-line-tab-inactive ((t (:inherit tab-line-tab :background "lavender"))))
- '(tab-line-tab-inactive-alternate ((t (:inherit tab-line-tab-inactive :background "lavender")))))
+ '(tab-bar-tab-inactive ((t (:inherit tab-bar-tab :background "lavender")))))

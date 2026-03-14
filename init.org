@@ -5,6 +5,7 @@
 #+SEQ_TODO: TODO(t) IN_PROGRESS(i) PAUSED (p) | DONE(d) OBSOLETE(o)
 
 * Emacs config for Literate Programming in Clojure
+
 ** Purpose of the config
 This config aims to maximize Clojure programmer productivity through:
 
@@ -41,6 +42,7 @@ This config aims to maximize Clojure programmer productivity through:
 #+begin_src elisp :tangle ./init.el
 (server-start)
 #+end_src
+
 
 ** Emacs customization API
 #+begin_src elisp :tangle ./init.el
@@ -97,6 +99,12 @@ This config aims to maximize Clojure programmer productivity through:
 ** General global settings
 #+begin_src elisp :tangle ./init.el
 (safe-load "~/.emacs.d/elisp/global-settings.tngl.el")
+#+end_src
+
+*** Use .envrc everywhere
+#+begin_src elisp :tangle ~/.emacs.d/elisp/global-settings.tngl.el
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
 #+end_src
 
 *** Emacs startup/exit
@@ -262,29 +270,27 @@ This config aims to maximize Clojure programmer productivity through:
 (declare-function poly-org-mode? "org-mode.tangled")
 
 (defun pm--org-reveal-inside-source-block ()
-  "Temporarily switch back to org-mode, to be able to do proper unfolding"
+  "Reveals only the parent header of a current org-mode source block"
   (interactive)
-  (save-excursion
+  (when (poly-org-mode?)
     (let* ((post-command-hook nil)
-           (pm--move-overlays (lambda ())))
-      (if (eq major-mode 'org-mode)
-	      (org-back-to-heading)
-				;; switch to org mode, brings cursor into heading like above
-				(polymode-previous-chunk)
-				(next-line)
-				(pm-switch-to-buffer))
+           (pm--move-overlays (lambda ()))
+           (curr-point (point))
+           (base-mode (buffer-local-value 'major-mode (pm-base-buffer)))
+           (inner-chunk (not (eq major-mode base-mode))))
+      (when inner-chunk
+        ;; switch to org-mode without breaking polymode
+        (goto-char (point-min))
+        (polymode-post-command)
+        (goto-char curr-point))
+
       ;; now, in org-mode, properly find parent heading and unfold it
-      (let ((prev (point))
-		        (cond t))
-				(while cond
-				  (org-up-element)
-	  	  (org-show-children)
-			    (forward-char)
-			    (if (eq (char-after) 32)
-	            (setq cond nil)))
-				(goto-char prev))
-      (org-fold-show-subtree)))
-  (pm-switch-to-buffer))
+      (org-fold-show-context 'isearch)
+
+      ;; go back to original point and restore the major mode
+      (goto-char curr-point)
+      (when inner-chunk
+        (polymode-post-command)))))
 
 (use-package bm
   :ensure t
@@ -337,7 +343,6 @@ This config aims to maximize Clojure programmer productivity through:
   (add-hook 'before-revert-hook #'bm-buffer-save)
 
   ;; org-mode expand the region containing a bookmark
-  ;; (add-hook 'bm-after-goto-hook 'org-bookmark-jump-unhide)
   (add-hook 'bm-after-goto-hook 'pm--org-reveal-inside-source-block)
 
   ;; the markers on the right fringe instead of the left

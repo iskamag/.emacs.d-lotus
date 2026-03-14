@@ -9,10 +9,15 @@
 		 "--with-filename" "--no-heading" "--line-number" "--color" "never" "%s"))
  '(custom-enabled-themes nil)
  '(custom-safe-themes
+<<<<<<< HEAD
 	 '("7e99647c5d207d8f6871821c6691038e61c77b4a42d3104d466c5b0f946da5b8"
 		 "edac7482aa3b826f553e556b6063b3b68c844cf040fa8a769755cb4f3eef9258"
 		 "5e2ee110fadd9d2a7988d1bc9adb39d0f14a672320bdace6e0e49113860f6fce"
 		 "226ca27c43cbfcfda085fc2e2449d72ff69e46bf7c829ff63dfab5ce4c7eba19"
+=======
+	 '("ed42d501617e7297d48a38c060fcf187e4318d253ed2636c8584239f512ca6ff"
+		 "c5e34ad9f324e74b8e66796381694c35709e5b8abfd83a6ce709d1cf04bdb31b"
+>>>>>>> 2a9b1fece0c9f7d2f1981dd904227c509422d89b
 		 "9ab9441566f7c3b059a205a7c5fad32a58422c2695815436d8cc087860b8c2e5"
 		 "7613ef56a3aebbec29618a689e47876a72023bbd1b8393efc51c38f5ed3f33d1"
 		 "703a3469ae4d2a83fd5648cac0058d57ca215d0fea7541fb852205e4fae94983"
@@ -26,6 +31,7 @@
  '(package-selected-packages
 	 '(all-the-icons-completion all-the-icons-dired async beacon bm cape casual-avy
 															cider clojure-mode command-log-mode consult corfu
+<<<<<<< HEAD
 															dired-ranger embark embark-consult flycheck
 															flycheck-clj-kondo iedit keyfreq magit marginalia
 															multi-vterm ob-async ob-clojurescript openwith
@@ -33,6 +39,18 @@
 															rainbow-delimiters transient treemacs timeout
 															treemacs-all-the-icons undo-fu-session undo-tree
 															uwu-theme vertico wgrep yasnippet))
+=======
+															dired-ranger dired-subtree embark embark-consult
+															envrc flycheck flycheck-clj-kondo iedit keyfreq
+															magit marginalia markdown-mode ob-async
+															ob-clojurescript openwith orderless pcre2el
+															poly-org posframe puni rainbow-delimiters timeout
+															transient treemacs treemacs-all-the-icons vertico
+															wgrep yasnippet))
+ '(safe-local-variable-directories
+	 '("/mnt/sda2/projects/dev/kombinacija/code"
+		 "/mnt/sda2/projects/dev/simple-clojure-project/"))
+>>>>>>> 2a9b1fece0c9f7d2f1981dd904227c509422d89b
  '(safe-local-variable-values
 	 '((cider-clojure-cli-parameters . "-M:cider/nrepl:dev")
 		 (cider-clojure-cli-parameters . "-M:dev")
@@ -64,6 +82,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+<<<<<<< HEAD
  '(font-lock-comment-face ((t (:foreground "dark green"))))
  '(font-lock-constant-face ((t (:foreground "saddle brown"))))
  '(font-lock-doc-face ((t (:inherit font-lock-comment-face))))
@@ -97,3 +116,6 @@
  '(tab-bar-tab-group-current ((t (:inherit bold :background "MediumPurple1" :foreground "white" :box (:line-width (2 . -2) :color "#ffffff")))))
  '(tab-bar-tab-group-inactive ((t (:background "lavender" :foreground "#193668" :box (:line-width (2 . -2) :color "lavender")))))
  '(tab-bar-tab-inactive ((t (:inherit tab-bar-tab :background "lavender")))))
+=======
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 100 :width normal :foundry "SRC" :family "Hack")))))
+>>>>>>> 2a9b1fece0c9f7d2f1981dd904227c509422d89b

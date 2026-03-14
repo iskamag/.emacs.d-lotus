@@ -37,6 +37,12 @@ This config aims to maximize Clojure programmer productivity through:
     (error (message "Failed to load %s: %s" file load-err))))
 #+end_src
 
+*** Start Emacs server
+#+begin_src elisp :tangle ./init.el
+(server-start)
+#+end_src
+
+** Emacs customization API
 #+begin_src elisp :tangle ./init.el
 (safe-load "~/.emacs.d/elisp/customization-api-tweaks.tngl.el")
 #+end_src
@@ -180,6 +186,65 @@ This config aims to maximize Clojure programmer productivity through:
                     "~/.emacs.d/sessions/"))
 #+end_src
 
+*** Runtime performance optimizations
+#+begin_src elisp :tangle ~/.emacs.d/elisp/global-settings.tngl.el
+;; Optimize for maximum runtime speed (not load time)
+
+;; Garbage collection optimizations
+(setq gc-cons-threshold 100000000       ;; 100MB - GC less frequently
+      gc-cons-percentage 0.1)            ;; Low threshold for when to trigger GC
+
+;; Font locking optimizations
+(setq font-lock-maximum-decoration 2     ;; Reduce font-lock complexity
+      jit-lock-defer-time 0.05           ;; Slight delay before font-locking
+      jit-lock-context-time 0.5)          ;; Delay context font-locking
+
+;; Don't recompute expensive properties on long lines
+(setq bidi-inhibit-bpa t)
+
+;; Reduce redisplay overhead
+(setq redisplay-skip-fontification-on-input t
+      fast-but-imprecise-scrolling t)
+
+;; Don't compact font caches during operation
+(setq inhibit-compacting-font-caches t)
+
+;; Optimize flycheck - don't check on every keystroke
+(setq flycheck-idle-change-delay 1.0      ;; Wait 1 second before checking
+      flycheck-buffer-switch-check-delay 1.0)
+
+;; Disable expensive features in large buffers
+(defun my-disable-expensive-features-in-large-buffers ()
+  (when (> (buffer-size) 100000)
+    (setq-local jit-lock-contextually nil)
+    (setq-local font-lock-multiline nil)))
+
+(add-hook 'prog-mode-hook #'my-disable-expensive-features-in-large-buffers)
+
+;; Reduce line number computation if using display-line-numbers
+(when (boundp 'display-line-numbers-width)
+  (setq display-line-numbers-width 2))
+#+end_src
+
+
+** File system
+#+begin_src elisp :tangle ./init.el
+(safe-load "~/.emacs.d/elisp/file-system.tngl.el")
+#+end_src
+
+*** Dired
+#+begin_src elisp :tangle ~/.emacs.d/elisp/file-system.tngl.el
+;; dired-subtree uses really dark background color, makes dirs unreadable
+(dotimes (i 6)
+  (set-face-background
+   (intern (format "dired-subtree-depth-%d-face" (1+ i)))
+   nil))
+
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "TAB") #'dired-subtree-toggle)
+  (define-key dired-mode-map (kbd "<backtab>") #'dired-subtree-cycle))
+#+end_src
+
 
 ** Text
 #+begin_src elisp :tangle ./init.el
@@ -202,9 +267,13 @@ This config aims to maximize Clojure programmer productivity through:
   (save-excursion
     (let* ((post-command-hook nil)
            (pm--move-overlays (lambda ())))
+      (if (eq major-mode 'org-mode)
+	      (org-back-to-heading)
+				;; switch to org mode, brings cursor into heading like above
+				(polymode-previous-chunk)
+				(next-line)
+				(pm-switch-to-buffer))
       ;; now, in org-mode, properly find parent heading and unfold it
-      (org-back-to-heading)
-      (pm-switch-to-buffer)
       (let ((prev (point))
 		        (cond t))
 				(while cond
@@ -299,16 +368,10 @@ This config aims to maximize Clojure programmer productivity through:
 ;; wrap lines at word boundaries, so that they always fit current window
 (global-visual-line-mode 1)
 
-;; display fill-column everywhere
-(global-display-fill-column-indicator-mode 1)
-
 ;; Default to utf-8 encoding
 (set-default-coding-systems 'utf-8)
 
 (setq-default
- ;; to see when a line is longer than 80 symbols
- display-fill-column-indicator-column 80
-
  ;; set width for automatic line breaks
  fill-column 80
 
@@ -330,8 +393,24 @@ This config aims to maximize Clojure programmer productivity through:
  ;; Stretch cursor to the glyph width
  x-stretch-cursor t
  )
+#+end_src
 
-(global-display-fill-column-indicator-mode t)
+**** Lightweight 80-char indicator with whitespace-mode
+#+begin_src elisp :tangle ~/.emacs.d/elisp/text-settings.tngl.el
+;; Use whitespace-mode for 80-char indicator - lighter than fill-column-indicator
+;; Only highlights lines that exceed 80 characters
+(use-package whitespace
+  :config
+  ;; Only visualize long lines (lines > 80 chars)
+  (setq whitespace-style '(lines-tail))
+  (setq whitespace-line-column 80)
+
+  ;; Only highlight long lines, don't show spaces/tabs
+  (setq whitespace-display-mappings
+        '((lines-tail ?\u2192 nil nil)))  ;; Show arrow at column 80
+
+  ;; Enable in programming modes
+  (add-hook 'prog-mode-hook #'whitespace-mode))
 #+end_src
 
 **** all-the-icons
@@ -352,6 +431,11 @@ This config aims to maximize Clojure programmer productivity through:
   :hook (marginalia-mode . all-the-icons-completion-mode))
 #+end_src
 
+**** custom theme
+#+begin_src elisp :tangle ~/.emacs.d/elisp/text-settings.tngl.el
+;simple face customization, comment if unwanted
+(load-theme 'lavender-light)
+#+end_src
 *** Editing
 **** Highlight symbol occurrences / multiple edits
 #+begin_src elisp :tangle ~/.emacs.d/elisp/text-settings.tngl.el
@@ -979,6 +1063,25 @@ The defaults are cycled in minibuffer with up/down arrows.
 (setq css-indent-offset 2)
 #+end_src
 
+*** Markdown
+#+begin_src elisp :tangle ~/.emacs.d/elisp/programming-settings.tngl.el
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init
+  (setq markdown-command "multimarkdown")
+  :config
+  (setq markdown-fontify-code-blocks-natively t
+        markdown-enable-math t
+        markdown-enable-wiki-links t
+        markdown-italic-underscore t
+        markdown-asymmetric-header t
+        markdown-gfm-additional-languages '("Clojure" "clojure"))
+  (add-hook 'markdown-mode-hook #'turn-on-auto-fill))
+#+end_src
+
 
 ** Org-mode (literate programming)
 #+begin_src elisp :tangle ~/.emacs.d/elisp/org-mode.tngl.el
@@ -1037,30 +1140,6 @@ Cycles through three states:
              'org-optimize-window-after-visibility-change)
 #+end_src
 
-**** Mouse wheel unfolding
-#+begin_src elisp :tangle ~/.emacs.d/elisp/org-mode.tngl.el
-;; Define some helper functions
-(defun my-org-unfold ()
-  (interactive)
-  (org-back-to-heading t)
-  (org-shifttab))
-
-(defun my-org-fold ()
-  "Do the global cycling action backwards."
-  (interactive)
-  (org-back-to-heading t)
-  (setq prefix-arg 2)
-  (universal-argument--mode)
-  (org-shifttab))
-#+end_src
-
-#+begin_src elisp :tangle ~/.emacs.d/elisp/org-mode.tngl.el
-;;single wheel is too sensetive, need double.
-
-(define-key org-mode-map (kbd "C-<wheel-up>") 'my-org-unfold)
-(define-key org-mode-map (kbd "C-<wheel-down>") 'my-org-fold)
-#+end_src
-
 **** Custom fold/unfold
 #+begin_src elisp :tangle ~/.emacs.d/elisp/org-mode.tngl.el
 (require 'timeout)
@@ -1087,42 +1166,44 @@ Cycles through three states:
 
 (defun my-org-custom-fold (&optional arg)
   (interactive "P")
-  (org-back-to-heading)
-  (unless (or my-org-fold-remember
-			        (eq this-command last-command))
-    (setq my-org-fold-state 0))
+  (save-excursion
+    (org-back-to-heading)
+    (unless (or my-org-fold-remember
+							  (eq this-command last-command))
+      (setq my-org-fold-state 0))
 
-  (unless (integerp arg)
-    (setq arg 1))
-  (let ((cycle-arg (if (= arg 1) nil (ceiling (/ arg 2.0))))
-				(inc (lambda ()
-	             (setq my-org-fold-state (mod (+ my-org-fold-state
-														       (if (and cycle-arg
-													(evenp cycle-arg))
-																	   -1 1)) 4))))
-		(next (save-excursion (org-next-visible-heading 1)
-								  (goto-char (1- (point))))))
-    (my-org-folded)
-    (case my-org-fold-state
-      ;; Descriptions assume going forwards
-      (0 ;; at ALL or uninitialized
-       (funcall inc)
-       (message "FOLD"))
-      (1 ;; at FOLD
-       ;; Children
-       (org-cycle)
-       (funcall inc)
-       (message "CHILD"))
-      (2 ;; at CHILD
-       ;; Contents
-       (org-show-children)
-       (funcall inc)
-       (message "CON"))
-      (3 ;; at CON
-       ;; Show All
-       (org-fold-region (point) next nil '(block drawer headline))
-       (funcall inc)
-       (message "ALL")))))
+    (unless (integerp arg)
+      (setq arg 1))
+
+    (my-org-folded) ;; Common state to unfold from
+    (let ((cycle-arg (if (= arg 1) nil (ceiling (/ arg 2.0))))
+          (inc (lambda ()
+					 (setq my-org-fold-state (mod (+ my-org-fold-state
+                                                 (if (and cycle-arg
+																									  (evenp cycle-arg))
+                                                     -1 1)) 4))))
+				  (next (save-excursion (org-next-visible-heading 1)
+														    (goto-char (1- (point))))))
+      (case my-org-fold-state
+		;; Descriptions assume going forwards
+		(0 ;; at ALL or uninitialized
+		 (funcall inc)
+		 (message "FOLD"))
+		(1 ;; at FOLD
+		 ;; Children
+		 (org-cycle)
+		 (funcall inc)
+		 (message "CHILDREN"))
+		(2 ;; at CHILDREN
+		 ;; Contents
+		 (org-show-children)
+		 (funcall inc)
+		 (message "CONTENTS"))
+		(3 ;; at CONTENTS
+		 ;; Show All
+		 (org-fold-region (point) next nil '(block drawer headline))
+		 (funcall inc)
+		 (message "ALL"))))))
 
 (defun my-org-custom-fold-backwards (&optional arg)
   (interactive "P")
@@ -1133,8 +1214,8 @@ Cycles through three states:
 #+end_src
 
 #+begin_src elisp :tangle ~/.emacs.d/elisp/org-mode.tngl.el
-(define-key org-mode-map (kbd "C-S-<wheel-up>") 'my-org-custom-fold)
-(define-key org-mode-map (kbd "C-S-<wheel-down>") 'my-org-custom-fold-backwards)
+(define-key org-mode-map (kbd "C-<wheel-up>") 'my-org-custom-fold)
+(define-key org-mode-map (kbd "C-<wheel-down>") 'my-org-custom-fold-backwards)
 (timeout-throttle 'my-org-custom-fold 0.2)
 #+end_src
 
@@ -1315,6 +1396,15 @@ Prevents flycheck from confusing buffers and breaking down. See this [[https://g
    (oset pm/chunkmode adjust-face
 	 '(:background "black"
            :extend t))))
+#+end_src
+
+*** 80-char indicator in polymode code blocks
+#+begin_src elisp :tangle ~/.emacs.d/elisp/polymode.tngl.el
+;; Enable fill-column indicator in polymode inner buffers (code blocks)
+(add-hook
+ 'polymode-init-inner-hook
+ (lambda ()
+   (display-fill-column-indicator-mode 1)))
 #+end_src
 
 *** Source blocks display fix
